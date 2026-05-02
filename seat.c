@@ -126,14 +126,18 @@ update_capabilities(struct cg_seat *seat)
 	}
 	wlr_seat_set_capabilities(seat->seat, caps);
 
-	/* Senvend kiosk: never display a default cursor. Touch-only deployments
+	/* Senvend kiosk fork: cursor hidden by default (touch-only deployments
 	 * would otherwise flash a cursor between cage taking DRM master and the
-	 * first wayland client (storefront) connecting to provide a cursor surface.
-	 * Touchscreens like the eGalax report POINTER capability, so the upstream
-	 * "if (no pointer) unset; else set xcursor" branch always lands on set.
-	 * For a kiosk fork that's never the desired outcome — hide unconditionally.
+	 * first wayland client connecting to provide a cursor surface; the
+	 * eGalax-class touchscreen reports POINTER capability so upstream's
+	 * "if (no pointer) unset; else set xcursor" always lands on set).
+	 * `cage -c` restores upstream behaviour for debugging / non-kiosk runs.
 	 */
-	wlr_cursor_unset_image(seat->cursor);
+	if (seat->server->show_cursor && (caps & WL_SEAT_CAPABILITY_POINTER) != 0) {
+		wlr_cursor_set_xcursor(seat->cursor, seat->xcursor_manager, DEFAULT_XCURSOR);
+	} else {
+		wlr_cursor_unset_image(seat->cursor);
+	}
 }
 
 static void

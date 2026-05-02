@@ -249,6 +249,8 @@ usage(FILE *file, const char *cage)
 		" -s\t Allow VT switching\n"
 		" -v\t Show the version number and exit\n"
 		" -x\t Disable XWayland\n"
+		" -c\t Show the default cursor (senvend fork: cursor is hidden by\n"
+		"   \t default for touch-only kiosks; -c restores upstream behaviour)\n"
 		"\n"
 		" Use -- when you want to pass arguments to APPLICATION\n",
 		cage);
@@ -258,9 +260,10 @@ static bool
 parse_args(struct cg_server *server, int argc, char *argv[])
 {
 	server->enable_xwayland = true;
+	server->show_cursor = false;
 
 	int c;
-	while ((c = getopt(argc, argv, "dDhm:svx")) != -1) {
+	while ((c = getopt(argc, argv, "cdDhm:svx")) != -1) {
 		switch (c) {
 		case 'd':
 			server->xdg_decoration = true;
@@ -286,6 +289,9 @@ parse_args(struct cg_server *server, int argc, char *argv[])
 			exit(0);
 		case 'x':
 			server->enable_xwayland = false;
+			break;
+		case 'c':
+			server->show_cursor = true;
 			break;
 		default:
 			usage(stderr, argv[0]);

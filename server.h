@@ -74,6 +74,11 @@ struct cg_server {
 	bool allow_vt_switch;
 	bool enable_xwayland;
 	bool return_app_code;
+	/* Senvend kiosk: when true, restore the upstream behaviour of setting
+	 * a default xcursor on the seat whenever a pointer-capable input
+	 * device is attached. Default false (kiosk mode = no cursor) — see
+	 * the matching gate in seat.c::seat_set_capabilities. Toggle with -c. */
+	bool show_cursor;
 	bool terminated;
 	enum wlr_log_importance log_level;
 };
